@@ -1,1 +1,1 @@
-This project is for the automation of the PO ordering system for Anteater Electric Racing.g
+This project is for the automation of the PO ordering system for Anteater Electric Racing.
