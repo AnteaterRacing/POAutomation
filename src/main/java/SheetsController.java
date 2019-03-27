@@ -10,7 +10,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,18 +20,21 @@ import java.util.Collections;
 import java.util.List;
 
 public class SheetsController {
-    private static final String APPLICATION_NAME = "PO Processing";
+    private static final String APPLICATION_NAME = "POAutomation";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
     /**
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved tokens/ folder.
      */
-    private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+    private static final String CREDENTIALS_FILE_PATH = "/client_id.json";
 
+    /**
+     * Variables used to specify a specific spreadsheet
+     */
     private Sheets serviceHandler;
+    private String spreadsheetID;
 
     /**
      * Creates an authorized Credential object.
@@ -61,8 +64,9 @@ public class SheetsController {
      * @throws IOException If the credentials.json file cannot be found by the getCredentials function
      * @throws GeneralSecurityException If the credentials in the json file are not valid
      */
-    public SheetsController() throws IOException, GeneralSecurityException
+    public SheetsController(String id) throws IOException, GeneralSecurityException
     {
+        spreadsheetID = id;
         NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         serviceHandler = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                             .setApplicationName(APPLICATION_NAME)
@@ -73,40 +77,60 @@ public class SheetsController {
      * Returns the objects contained in within each cell of the listed spreadsheet in the listed range.
      * 
      * @param spreadsheetId The unique ID of the wanted spreadsheet. Can be found within the url of the spreadsheet
-     * @param range Specifies the cells that will be returned in the list.
-     * @return data found within the range of the cells of the spreadsheet specified
+     * @param range Specifies the cells that will be returned in the list
+     * @return data found within the cells stated from the spreadsheet specified
      * @throws IOException If a spreadsheet does not exist
      */
-    public List<List<Object>> getValues(String spreadsheetId, String range) throws IOException
+    public List<List<Object>> getValues(String range) throws IOException
     {
         ValueRange response = serviceHandler.spreadsheets().values()
-                                .get(spreadsheetId, range)
+                                .get(spreadsheetID, range)
                                 .execute();
         return response.getValues();
     }
 
-    /**
-     * Prints the names and majors of students in a sample spreadsheet:
-     * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+    /** 
+     * Writes the specified values to the spreadsheet associated with an instance of 
+     * the SheetsController class
+     * 
      */
+    public void writeToSpreadsheet(String range,
+                                   String valueOption,
+                                   List<List<Object>> value) throws IOException
+    {
+        ValueRange newValues = new ValueRange().setValues(value);
+        UpdateValuesResponse result = serviceHandler.spreadsheets().values()
+                                            .update(spreadsheetID, range, newValues)
+                                            .setValueInputOption(valueOption)
+                                            .execute();
+        System.out.printf("%d cells have been updated.", result.getUpdatedCells());
+    }
+
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
-        SheetsController sheet = new SheetsController();
         final String spreadsheetId = "1xvoBF6-zTtCcOcq3Vmnf6RG0REUDSCq9l3qV2jnGjHY";
-        final String range = "POs";
-        List<List<Object>> values = sheet.getValues(spreadsheetId, range);
+        final String range = "POs!A1:AX3";
+        SheetsController sheet = new SheetsController(spreadsheetId);
+        List<List<Object>> values = sheet.getValues(range);
         if (values == null || values.isEmpty()) {
             System.out.println("No data found.");
         } else {
-            System.out.println("Name, Major");
+            //System.out.println("Name, Major");
+            int count = 0;
             for (List row : values) {
                 // Print columns A and E, which correspond to indices 0 and 4.
                 //System.out.printf("%s, %s\n", row.get(0), row.get(4));
+                //row.ensureCapacity(26+23);
                 for(int i = 0; i < row.size(); i++)
-                    System.out.printf("%s,", row.get(i));
+                    System.out.printf("%s   ", row.get(i));
                 
+                count++;
+                System.out.printf("Size: %d\n", row.size());
                 System.out.println();
             }
+            
+            System.out.println("update spreadsheet");
+            //sheet.writeToSpreadsheet(range, "RAW", values);
         }
     }
 }

@@ -15,3 +15,4 @@ build
 
 # Ignore code generated files
 bin/
+tokens/
