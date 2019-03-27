@@ -91,8 +91,12 @@ public class SheetsController {
 
     /** 
      * Writes the specified values to the spreadsheet associated with an instance of 
-     * the SheetsController class
+     * the SheetsController class.
      * 
+     * @param range Specifies the range of cells being written to
+     * @param valueOption option decribing the type of values being written (formulas or text)
+     * @param value the values being written into the speadsheet
+     * @throws IOException If speadsheet does not exists
      */
     public void writeToSpreadsheet(String range,
                                    String valueOption,
