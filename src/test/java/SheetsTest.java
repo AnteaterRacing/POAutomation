@@ -2,6 +2,7 @@ import java.util.Arrays;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,9 +33,18 @@ class SheetsTest
         String valueOption = "RAW";
         List<List<Object>> values  = new ArrayList<>();
 
-        values.add(Arrays.asList("1", "0", "1"));
-        values.add(Arrays.asList("0", "1", "0"));
-        values.add(Arrays.asList("0", "0", "1"));
+        values.add(Arrays.asList(
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)), 
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
+        values.add(Arrays.asList(
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)), 
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
+        values.add(Arrays.asList(
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)), 
+                        Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
 
         SheetsController sheet = new SheetsController(id);
         sheet.writeToSpreadsheet(range, valueOption, values);
