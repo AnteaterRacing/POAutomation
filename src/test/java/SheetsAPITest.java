@@ -14,7 +14,7 @@ class SheetsAPITest
     {
         String id = "1VhNsnBAiF1U8ifXr3u0kdO-iC_HOG56h2AZ9zNnmzuE";
         String range = "Test0!A1:C3";
-        SheetsAPI sheet = new SheetsAPI();
+        SheetsAPI sheet = SheetsAPI.getSheetsAPI();
         List<List<Object>> sheetValues = sheet.getValues(id, range);
 
         List<List<Object>> expectedValues = new ArrayList<>();
@@ -46,7 +46,7 @@ class SheetsAPITest
                         Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)), 
                         Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
 
-        SheetsAPI sheet = new SheetsAPI();
+        SheetsAPI sheet = SheetsAPI.getSheetsAPI();
         sheet.writeToSpreadsheet(id, range, valueOption, values);
         List<List<Object>> results = sheet.getValues(id, range);
 

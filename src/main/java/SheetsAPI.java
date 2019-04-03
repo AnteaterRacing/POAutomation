@@ -34,7 +34,7 @@ public class SheetsAPI {
      * Variables used to specify a specific spreadsheet
      */
     private Sheets sheetsServiceHandler;
-
+    public static SheetsAPI sheetsAPIInstance = null;
 
     /**
      * Creates an authorized Credential object.
@@ -65,7 +65,7 @@ public class SheetsAPI {
      * @throws IOException If the credentials.json file cannot be found by the getCredentials function
      * @throws GeneralSecurityException If the credentials in the json file are not valid
      */
-    public SheetsAPI() throws IOException, GeneralSecurityException
+    private SheetsAPI() throws IOException, GeneralSecurityException
     {
         NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Credential creds = getCredentials(HTTP_TRANSPORT);
@@ -73,6 +73,20 @@ public class SheetsAPI {
                                          .setApplicationName(APPLICATION_NAME).build();
     }
 
+
+    /**
+     * Grabs an instance of the sheetsAPI class through the sheetsAPIInstance variable
+     * 
+     * @throws IOException If the credentials.json file cannot be found by the getCredentials function
+     * @throws GeneralSecurityException If the credentials in the json file are not valid
+     */
+    static public SheetsAPI getSheetsAPI() throws IOException, GeneralSecurityException
+    {
+        if (sheetsAPIInstance == null)
+            sheetsAPIInstance = new SheetsAPI();
+        
+        return sheetsAPIInstance;
+    }
 
     /**
      * Returns the objects contained in within each cell of the listed spreadsheet in the listed range.
