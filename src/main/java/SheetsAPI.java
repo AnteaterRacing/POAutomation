@@ -12,19 +12,14 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
 
-import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
-
-import javafx.util.Pair;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SheetsController {
+public class SheetsAPI {
     private static final String APPLICATION_NAME = "POAutomation";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
@@ -39,7 +34,6 @@ public class SheetsController {
      * Variables used to specify a specific spreadsheet
      */
     private Sheets sheetsServiceHandler;
-    private String spreadsheetID;
 
 
     /**
@@ -50,7 +44,7 @@ public class SheetsController {
      */
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-        InputStream in = SheetsController.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = SheetsAPI.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
@@ -71,9 +65,8 @@ public class SheetsController {
      * @throws IOException If the credentials.json file cannot be found by the getCredentials function
      * @throws GeneralSecurityException If the credentials in the json file are not valid
      */
-    public SheetsController(String id) throws IOException, GeneralSecurityException
+    public SheetsAPI() throws IOException, GeneralSecurityException
     {
-        spreadsheetID = id;
         NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Credential creds = getCredentials(HTTP_TRANSPORT);
         sheetsServiceHandler = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, creds)
@@ -89,7 +82,7 @@ public class SheetsController {
      * @return data found within the cells stated from the spreadsheet specified
      * @throws IOException If a spreadsheet does not exist
      */
-    public List<List<Object>> getValues(String range) throws IOException
+    public List<List<Object>> getValues(String spreadsheetID, String range) throws IOException
     {
         ValueRange response = sheetsServiceHandler.spreadsheets().values()
                                 .get(spreadsheetID, range)
@@ -102,12 +95,14 @@ public class SheetsController {
      * Writes the specified values to the spreadsheet associated with an instance of 
      * the SheetsController class.
      * 
+     * @param spreadsheetId The unique ID of the wanted spreadsheet. Can be found within the url of the spreadsheet
      * @param range Specifies the range of cells being written to
      * @param valueOption option decribing the type of values being written (formulas or text)
      * @param value the values being written into the speadsheet
      * @throws IOException If speadsheet does not exists
      */
-    public void writeToSpreadsheet(String range,
+    public void writeToSpreadsheet(String spreadsheetID,
+                                   String range,
                                    String valueOption,
                                    List<List<Object>> value) throws IOException
     {
@@ -119,7 +114,7 @@ public class SheetsController {
         System.out.printf("%d cells have been updated.", result.getUpdatedCells());
     }
 
-
+    /*
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final String spreadsheetId = "1xvoBF6-zTtCcOcq3Vmnf6RG0REUDSCq9l3qV2jnGjHY";
@@ -146,5 +141,5 @@ public class SheetsController {
             System.out.println("update spreadsheet");
             //sheet.writeToSpreadsheet(range, "RAW", values);
         }
-    }
+    } */
 }
