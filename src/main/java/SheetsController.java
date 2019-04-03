@@ -39,30 +39,7 @@ public class SheetsController {
      * Variables used to specify a specific spreadsheet
      */
     private Sheets sheetsServiceHandler;
-    private Drive  driveServiceHandler;
     private String spreadsheetID;
-
-
-    /**
-     * returns the spreadsheet id and sheet id of the spreadsheet connected to an instance of the 
-     * SheetController class.
-     * 
-     * @param tabNum The number corresponding to the tab on the spreadsheet
-     * @return pair containing spreadsheet id and sheet id
-     * @throws IOException when a spreadsheet is not found
-     */
-    private Pair<String, Integer> getIDs(int tabNum) throws IOException
-    {
-        Sheets.Spreadsheets.Get request = sheetsServiceHandler.spreadsheets().get(spreadsheetID);
-        request.setIncludeGridData(true);
-
-        Spreadsheet response = request.execute();
-        ArrayList<Sheet> test = (ArrayList<Sheet>)response.get("sheets");
-        Sheet page = test.get(tabNum);
-        SheetProperties properties = (SheetProperties)page.get("properties");
-
-        return new Pair<String, Integer>(spreadsheetID, (int)properties.get("sheetId"));
-    }
 
 
     /**
@@ -101,49 +78,6 @@ public class SheetsController {
         Credential creds = getCredentials(HTTP_TRANSPORT);
         sheetsServiceHandler = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, creds)
                                          .setApplicationName(APPLICATION_NAME).build();
-        driveServiceHandler = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, creds)
-                                        .setApplicationName(APPLICATION_NAME).build();
-    }
-
-    /**
-     * This constructor copys the contents of the spreadsheet in the given SheetsController argument
-     * and returns an instance of a new speadsheet with the copied content.
-     * 
-     * @return copy of the SheetsController
-     * @param copy Another instance whose spreadsheet we want to copy onto the new object created
-     * @param tabNum The number corresponding to the tab on the spreadsheet that will be copied
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    public SheetsController(SheetsController copy, int tabNum) throws IOException, GeneralSecurityException
-    {
-        NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Credential creds = getCredentials(HTTP_TRANSPORT);
-        sheetsServiceHandler = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, creds)
-                                         .setApplicationName(APPLICATION_NAME).build();
-        driveServiceHandler = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, creds)
-                                        .setApplicationName(APPLICATION_NAME).build();
-
-        Spreadsheet newSheet = new Spreadsheet();
-        newSheet = sheetsServiceHandler.spreadsheets().create(newSheet)
-                                       .setFields("spreadsheetId").execute();
-        spreadsheetID = newSheet.getSpreadsheetId();
-
-        Pair<String, Integer> ids = copy.getIDs(tabNum);
-        String copySpreadsheetID = ids.getKey();
-        int sheetID = ids.getValue();
-    
-        // Copying sheet within copy to this object
-        CopySheetToAnotherSpreadsheetRequest request = new CopySheetToAnotherSpreadsheetRequest();
-        request.setDestinationSpreadsheetId(spreadsheetID);
-
-        Sheets.Spreadsheets.SheetsOperations.CopyTo requestOperation = sheetsServiceHandler.spreadsheets()
-                                                                                            .sheets()
-                                                                                            .copyTo(copySpreadsheetID,
-                                                                                                    sheetID,
-                                                                                                    request);
-        SheetProperties response = requestOperation.execute();
-        System.out.println(response);
     }
 
 
@@ -185,24 +119,6 @@ public class SheetsController {
         System.out.printf("%d cells have been updated.", result.getUpdatedCells());
     }
 
-
-    /**
-     * Moves the spreadsheet from one location within the google drive to another based on 
-     * the given folderID
-     * 
-     * @param folderID ID of the destination folder. Can be found through Google Drive URL.
-     * @throws IOException If spreadsheet does not exist.
-     */
-    public void moveSpreadsheet(String folderID) throws IOException
-    {
-        File file = driveServiceHandler.files().get(spreadsheetID)
-                                       .setFields("parents").execute();
-        String prevParents = String.join(",", file.getParents());
-        System.out.println(prevParents);
-        file = driveServiceHandler.files().update(spreadsheetID, null)
-                                  .setAddParents(folderID).setRemoveParents(prevParents)
-                                  .setFields("id, parents").execute();
-    }
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
