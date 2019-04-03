@@ -128,7 +128,7 @@ public class SheetsAPI {
         System.out.printf("%d cells have been updated.", result.getUpdatedCells());
     }
 
-    /*
+    
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final String spreadsheetId = "1xvoBF6-zTtCcOcq3Vmnf6RG0REUDSCq9l3qV2jnGjHY";
@@ -155,5 +155,5 @@ public class SheetsAPI {
             System.out.println("update spreadsheet");
             //sheet.writeToSpreadsheet(range, "RAW", values);
         }
-    } */
+    } 
 }
