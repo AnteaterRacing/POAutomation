@@ -19,10 +19,10 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
-public class SheetsAPI {
+class SheetsAPI {
     private static final String APPLICATION_NAME = "POAutomation";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final String TOKENS_DIRECTORY_PATH = "tokens/sheets";
     /**
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved tokens/ folder.
@@ -59,7 +59,7 @@ public class SheetsAPI {
 
     /**
      * Instantiates a new instance of the serviceHandler, which will allow access to a specific google
-     * spreadsheet based on the id given.
+     * spreadsheet based on an id given.
      * 
      * @return instance of SheetsController
      * @throws IOException If the credentials.json file cannot be found by the getCredentials function
@@ -129,12 +129,12 @@ public class SheetsAPI {
     }
 
     
-    public static void main(String... args) throws IOException, GeneralSecurityException {
+    /*public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final String spreadsheetId = "1xvoBF6-zTtCcOcq3Vmnf6RG0REUDSCq9l3qV2jnGjHY";
         final String range = "POs!A1:AX3";
-        SheetsController sheet = new SheetsController(spreadsheetId);
-        List<List<Object>> values = sheet.getValues(range);
+        SheetsAPI sheet = SheetsAPI.getSheetsAPI();
+        List<List<Object>> values = sheet.getValues(spreadsheetId, range);
         if (values == null || values.isEmpty()) {
             System.out.println("No data found.");
         } else {
@@ -155,5 +155,5 @@ public class SheetsAPI {
             System.out.println("update spreadsheet");
             //sheet.writeToSpreadsheet(range, "RAW", values);
         }
-    } 
+    } */
 }
