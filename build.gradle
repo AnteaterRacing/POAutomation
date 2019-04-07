@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'DriveAPI'
+mainClassName = 'GmailAPI'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 version = '1.0'
@@ -15,6 +15,8 @@ dependencies {
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-sheets:v4-rev516-1.23.0'
     compile 'com.google.apis:google-api-services-drive:v3-rev110-1.23.0'
+    compile 'com.google.apis:google-api-services-gmail:v1-rev83-1.23.0'
+    compile 'javax.mail:mail:1.4.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
