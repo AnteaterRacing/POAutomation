@@ -14,6 +14,8 @@ import com.google.api.services.gmail.model.Label;
 import com.google.api.services.gmail.model.ListLabelsResponse;
 import com.google.api.services.gmail.model.Draft;
 import com.google.api.services.gmail.model.Message;
+import com.google.api.services.gmail.model.ListDraftsResponse;
+import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -208,8 +212,50 @@ class GmailAPI {
         serviceHandler.users().drafts().delete(userID, draftID).execute();
     }
 
-    public static void main(String... args) throws IOException, GeneralSecurityException {
+    /**
+     * Retrieves a list of drafts held in a user's account based on the id given
+     * 
+     * @param userID the id of the user whose drafts we will look at. "me" will refer to the 
+     * authorized user
+     * @return a list of drafts from the user
+     * @throws IOException
+     */
+    public List<Draft> getDrafts(String userID) throws IOException
+    {
+        ListDraftsResponse response = serviceHandler.users().drafts().list(userID).execute();
+        return response.getDrafts();
+    }
+
+
+    public List<Message> getInbox(String userID) throws IOException
+    {
+        ListMessagesResponse response = serviceHandler.users().messages().list(userID)
+                                                      .setLabelIds(Arrays.asList(new String[] {"INBOX"}))
+                                                      .execute();
+
+    
+        List<Message> messages = new ArrayList<Message>();
+        while (response.getMessages() != null) 
+        {
+            messages.addAll(response.getMessages());
+            if (response.getNextPageToken() != null) 
+            {
+                String pageToken = response.getNextPageToken();
+                response = serviceHandler.users().messages().list(userID)
+                                         .setLabelIds(Arrays.asList(new String[] {"INBOX"}))
+                                         .setPageToken(pageToken).execute();
+            } 
+            else
+                break;
+        }
+
+        return messages;
+    }
+
+
+    public static void main(String... args) throws IOException, GeneralSecurityException, MessagingException {
         // Build a new authorized API client service.
+        /*
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                                  .setApplicationName(APPLICATION_NAME).build();
@@ -225,6 +271,10 @@ class GmailAPI {
             for (Label label : labels) {
                 System.out.printf("- %s\n", label.getName());
             }
-        }
+        }*/
+
+        GmailAPI gmail = GmailAPI.getInstance();
+        String messageID = gmail.createDraft("vguy77@gmail.com", "vguy77@gmail.com", "test", "test", "me");
+        gmail.sendDraft("me", messageID);
     }
 }
