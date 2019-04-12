@@ -3,12 +3,41 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+
+import com.google.api.services.drive.model.File;
+
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SheetsAPITest
 {
+    @Test
+    public void testCreatingSpreadsheet() throws IOException, GeneralSecurityException
+    {
+        SheetsAPI sheet = SheetsAPI.getSheetsAPI();
+        DriveAPI drive = DriveAPI.getDriveAPI();
+        String name = "Stuff";
+        String id = sheet.createSpreadsheet(name);
+
+        List<File> files= drive.getFiles();
+        boolean seenFile = false;
+
+        if (files != null)
+            for (File d : files)
+            {
+                if (d.getId().equals(id))
+                {
+                    seenFile = true;
+                    break;
+                }
+            }
+
+        assertTrue(seenFile);
+        drive.deleteItem(id);
+    }
+
     @Test 
     public void testGettingValues() throws IOException, GeneralSecurityException
     {

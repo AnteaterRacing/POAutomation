@@ -10,7 +10,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.*;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
+import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,6 +95,22 @@ class SheetsAPI {
         }
         
         return sheetsAPIInstance;
+    }
+
+    /**
+     * Creates a new spreadsheet with a given name
+     * 
+     * @param title the Name of the spreadsheet being created
+     * @return the id of the newly-created spreadsheet
+     * @throws IOException
+     */
+    String createSpreadsheet(String title) throws IOException
+    {
+        Spreadsheet spreadsheet = new Spreadsheet().setProperties(new SpreadsheetProperties()
+                                      .setTitle(title));
+        spreadsheet = sheetsServiceHandler.spreadsheets().create(spreadsheet)
+                                    .setFields("spreadsheetId").execute();
+        return spreadsheet.getSpreadsheetId();
     }
 
     /**
