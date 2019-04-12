@@ -10,7 +10,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.Drive.Files;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 class DriveAPI {
     private static final String APPLICATION_NAME = "POAutomation";
@@ -154,5 +157,38 @@ class DriveAPI {
         serviceHandler.files().update(fileID, null)
                       .setAddParents(folderID).setRemoveParents(prevParents)
                       .setFields("id, parents").execute();
+    }
+
+    /**
+     * Deletes a file/folder from the drive based on the id given
+     * 
+     * @param id the id of the file/folder you want to delete.
+     * @throws IOException
+     */
+    public void deleteItem(String id) throws IOException
+    {
+        serviceHandler.files().delete(id).execute();
+    }
+
+    /**
+     * Returns the files found within the google drive used to authenticate
+     * the API
+     * 
+     * @return A list of files contained in the drive
+     * @throws IOException
+     */
+    public List<File> getFiles() throws IOException
+    {
+        ArrayList<File> files = new ArrayList<File>();
+        Files.List filePages = serviceHandler.files().list();
+        do{
+            FileList filelist = filePages.execute();
+            files.addAll(filelist.getFiles());
+            filePages.setPageToken(filelist.getNextPageToken());
+
+        } while(filePages.getPageToken() != null &&
+                filePages.getPageToken().length() > 0);
+        
+        return files;
     }
 }
