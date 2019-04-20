@@ -2,10 +2,10 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-import com.google.api.services.gmail.Gmail;
+import javax.mail.MessagingException;
+
 import com.google.api.services.gmail.model.Draft;
 import com.google.api.services.gmail.model.Message;
-import javax.mail.MessagingException;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
