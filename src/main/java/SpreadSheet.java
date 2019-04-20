@@ -41,6 +41,20 @@ class SpreadSheet
     }
 
     /**
+     * Creates a new spreadsheet with the given name/title
+     * 
+     * @param title the name of the Spreadsheet we are creating
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public SpreadSheet(String title) throws IOException, GeneralSecurityException
+    {
+        sheetService = SheetsAPI.getSheetsAPI();
+        driveService = DriveAPI.getDriveAPI();
+        spreadsheetID = sheetService.createSpreadsheet(title);
+    }
+
+    /**
      * Enters data into a part of the spreadsheet.
      * 
      * @param tab               The tab where the data will be entered
@@ -63,18 +77,34 @@ class SpreadSheet
                       boolean containsFormulas) throws IOException
     {
         StringBuffer a1Notation = new StringBuffer(tab);
-        a1Notation.append("!");
-        a1Notation.append(startColumn);
-        a1Notation.append(startRow);
-        a1Notation.append(":");
-        a1Notation.append(endColumn);
-        a1Notation.append(endRow);
+        if (startColumn != "" && startRow > 0 && endColumn != "" && endRow > 0)
+        {
+            a1Notation.append("!");
+            a1Notation.append(startColumn);
+            a1Notation.append(startRow);
+            a1Notation.append(":");
+            a1Notation.append(endColumn);
+            a1Notation.append(endRow);
+        }
 
         sheetService.writeToSpreadsheet(
             spreadsheetID,
             a1Notation.toString(),
             !containsFormulas ? valueOption[0] : valueOption[1],
             contents);
+    }
+
+    /**
+     * Writes the contents to the entirety of the spreadsheet tab specified
+     * 
+     * @param tab
+     * @throws IOException
+     */
+    public void write(String tab,
+                      List<List<Object>> contents,
+                      boolean containsFormulas) throws IOException
+    {
+        write(tab, "", -1, "", -1, contents, containsFormulas);
     }
 
     /**
@@ -117,13 +147,28 @@ class SpreadSheet
                                         int endRow) throws IOException
     {
         StringBuffer a1Notation = new StringBuffer(tab);
-        a1Notation.append("!");
-        a1Notation.append(startColumn);
-        a1Notation.append(startRow);
-        a1Notation.append(":");
-        a1Notation.append(endColumn);
-        a1Notation.append(endRow);
+        if (startColumn != "" && startRow > 0 && endColumn != "" && endRow > 0)
+        {
+            a1Notation.append("!");
+            a1Notation.append(startColumn);
+            a1Notation.append(startRow);
+            a1Notation.append(":");
+            a1Notation.append(endColumn);
+            a1Notation.append(endRow);
+        }
 
         return sheetService.getValues(spreadsheetID, a1Notation.toString());
+    }
+
+    /**
+     * Returns all the values found in the spreadsheet tab specified
+     * 
+     * @param tab The spreadsheet tab where we want to grab values from
+     * @return
+     * @throws IOException
+     */
+    public List<List<Object>> getValues(String tab) throws IOException
+    {
+        return getValues(tab, "", -1, "", -1);
     }
 }
