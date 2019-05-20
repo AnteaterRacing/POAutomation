@@ -38,8 +38,8 @@ class GmailAPI {
     private static final String TOKENS_DIRECTORY_PATH = "tokens/gmail";
 
     /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
+     * Global instance of the scopes required by this quickstart. If modifying these
+     * scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(GmailScopes.GMAIL_MODIFY);
     private static final String CREDENTIALS_FILE_PATH = "/client_id.json";
@@ -48,43 +48,38 @@ class GmailAPI {
     private static GmailAPI gmailAPIInstance = null;
 
     /**
-     * Creates a MimeMessage object that contains information about the email. 
+     * Creates a MimeMessage object that contains information about the email.
      * 
-     * @param to the email address this email would be sent to
-     * @param from the email address this email would be sent from
-     * @param subject The subject of the created email
+     * @param to       the email address this email would be sent to
+     * @param from     the email address this email would be sent from
+     * @param subject  The subject of the created email
      * @param bodyText The message within the email
      * @throws Messagingexception when email i
      * @return a MimeMessage object
      */
-    private MimeMessage createMockDraft(String to,
-                                    String from,
-                                    String subject,
-                                    String bodyText) throws MessagingException
-    {
+    private MimeMessage createMockDraft(String to, String from, String subject, String bodyText)
+            throws MessagingException {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
 
         MimeMessage email = new MimeMessage(session);
 
         email.setFrom(new InternetAddress(from));
-        email.addRecipient(javax.mail.Message.RecipientType.TO,
-                new InternetAddress(to));
+        email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
         email.setSubject(subject);
         email.setText(bodyText);
         return email;
     }
 
-     /**
+    /**
      * Creates a message object based on the MimeMessage object given as a parameter
      *
      * @param emailContent Email to be set to raw of message
      * @return a message containing a base64url encoded email
-     * @throws IOException 
-     * @throws MessagingException 
+     * @throws IOException
+     * @throws MessagingException
      */
-    private Message createMessageWithEmail(MimeMessage emailContent)
-            throws MessagingException, IOException {
+    private Message createMessageWithEmail(MimeMessage emailContent) throws MessagingException, IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         emailContent.writeTo(buffer);
         byte[] bytes = buffer.toByteArray();
@@ -96,21 +91,23 @@ class GmailAPI {
     }
 
     /**
-     * Creates an instance of the GmailAPI class, which will allow to create, send, and read emails based on
-     * id's.
+     * Creates an instance of the GmailAPI class, which will allow to create, send,
+     * and read emails based on id's.
      * 
-     * @throws IOException If the credentials.json file cannot be found by the getCredentials function
-     * @throws GeneralSecurityException If the credentials in the json file are not valid
+     * @throws IOException              If the credentials.json file cannot be found
+     *                                  by the getCredentials function
+     * @throws GeneralSecurityException If the credentials in the json file are not
+     *                                  valid
      */
-    private GmailAPI() throws IOException, GeneralSecurityException
-    {
+    private GmailAPI() throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         serviceHandler = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                                  .setApplicationName(APPLICATION_NAME).build();
+                .setApplicationName(APPLICATION_NAME).build();
     }
 
     /**
      * Creates an authorized Credential object.
+     * 
      * @param HTTP_TRANSPORT The network HTTP Transport.
      * @return An authorized Credential object.
      * @throws IOException If the credentials.json file cannot be found.
@@ -121,11 +118,10 @@ class GmailAPI {
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
-                .build();
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+                clientSecrets, SCOPES)
+                        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+                        .setAccessType("offline").build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8080).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
@@ -135,12 +131,9 @@ class GmailAPI {
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public static GmailAPI getInstance() throws IOException, GeneralSecurityException
-    {
-        if (gmailAPIInstance == null)
-        {
-            synchronized(GmailAPI.class)
-            {
+    public static GmailAPI getInstance() throws IOException, GeneralSecurityException {
+        if (gmailAPIInstance == null) {
+            synchronized (GmailAPI.class) {
                 if (gmailAPIInstance == null)
                     gmailAPIInstance = new GmailAPI();
             }
@@ -152,12 +145,12 @@ class GmailAPI {
     /**
      * Creates a draft with the given parameters.
      *
-     * @param addressTo the email address we would send the email to
+     * @param addressTo   the email address we would send the email to
      * @param addressFrom the email address we are sending the email from
-     * @param subject the subject of the email
+     * @param subject     the subject of the email
      * @param messageBody the actual message contained in the email
-     * @param userId user's email address. The special value "me"
-     * can be used to indicate the authenticated user
+     * @param userId      user's email address. The special value "me" can be used
+     *                    to indicate the authenticated user
      * @return the id of the created draft
      * @throws MessagingException
      * @throws IOException
@@ -177,14 +170,13 @@ class GmailAPI {
     /**
      * Sends the email draft whose id was given to the function.
      * 
-     * @param userId User's email address. The special value "me"
-     * can be used to indicate the authenticated user.
+     * @param userId  User's email address. The special value "me" can be used to
+     *                indicate the authenticated user.
      * @param draftID the id of the message that was sent
      * @return the id of the sent message
      * @throws IOException
      */
-    public String sendDraft(String userID, String draftID) throws IOException
-    {
+    public String sendDraft(String userID, String draftID) throws IOException {
         Draft draft = new Draft();
         draft.setId(draftID);
         Message message = serviceHandler.users().drafts().send(userID, draft).execute();
@@ -195,75 +187,62 @@ class GmailAPI {
     /**
      * Deletes an email draft with the given id for the user specified.
      * 
-     * @param userID the id of the user. Can use "me" to specified the authenticated user
+     * @param userID  the id of the user. Can use "me" to specified the
+     *                authenticated user
      * @param draftID the id of the draft
      * @throws IOException
      */
-    public void deleteDraft(String userID, String draftID) throws IOException
-    {
+    public void deleteDraft(String userID, String draftID) throws IOException {
         serviceHandler.users().drafts().delete(userID, draftID).execute();
     }
 
     /**
      * Retrieves a list of drafts held in a user's account based on the id given
      * 
-     * @param userID the id of the user whose drafts we will look at. "me" will refer to the 
-     * authorized user
+     * @param userID the id of the user whose drafts we will look at. "me" will
+     *               refer to the authorized user
      * @return a list of drafts from the user
      * @throws IOException
      */
-    public List<Draft> getDrafts(String userID) throws IOException
-    {
+    public List<Draft> getDrafts(String userID) throws IOException {
         ListDraftsResponse response = serviceHandler.users().drafts().list(userID).execute();
         return response.getDrafts();
     }
 
-
-    public List<Message> getInbox(String userID) throws IOException
-    {
+    public List<Message> getInbox(String userID) throws IOException {
         ListMessagesResponse response = serviceHandler.users().messages().list(userID)
-                                                      .setLabelIds(Arrays.asList(new String[] {"INBOX"}))
-                                                      .execute();
+                .setLabelIds(Arrays.asList(new String[] { "INBOX" })).execute();
 
-    
         List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) 
-        {
+        while (response.getMessages() != null) {
             messages.addAll(response.getMessages());
-            if (response.getNextPageToken() != null) 
-            {
+            if (response.getNextPageToken() != null) {
                 String pageToken = response.getNextPageToken();
                 response = serviceHandler.users().messages().list(userID)
-                                         .setLabelIds(Arrays.asList(new String[] {"INBOX"}))
-                                         .setPageToken(pageToken).execute();
-            } 
-            else
+                        .setLabelIds(Arrays.asList(new String[] { "INBOX" })).setPageToken(pageToken).execute();
+            } else
                 break;
         }
 
         return messages;
     }
 
-
     public static void main(String... args) throws IOException, GeneralSecurityException, MessagingException {
         // Build a new authorized API client service.
         /*
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                                 .setApplicationName(APPLICATION_NAME).build();
-
-        // Print the labels in the user's account.
-        String user = "me";
-        ListLabelsResponse listResponse = service.users().labels().list(user).execute();
-        List<Label> labels = listResponse.getLabels();
-        if (labels.isEmpty()) {
-            System.out.println("No labels found.");
-        } else {
-            System.out.println("Labels:");
-            for (Label label : labels) {
-                System.out.printf("- %s\n", label.getName());
-            }
-        }*/
+         * final NetHttpTransport HTTP_TRANSPORT =
+         * GoogleNetHttpTransport.newTrustedTransport(); Gmail service = new
+         * Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+         * .setApplicationName(APPLICATION_NAME).build();
+         * 
+         * // Print the labels in the user's account. String user = "me";
+         * ListLabelsResponse listResponse =
+         * service.users().labels().list(user).execute(); List<Label> labels =
+         * listResponse.getLabels(); if (labels.isEmpty()) {
+         * System.out.println("No labels found."); } else {
+         * System.out.println("Labels:"); for (Label label : labels) {
+         * System.out.printf("- %s\n", label.getName()); } }
+         */
 
         GmailAPI gmail = GmailAPI.getInstance();
         String messageID = gmail.createDraft("vguy77@gmail.com", "vguy77@gmail.com", "test", "test", "me");
