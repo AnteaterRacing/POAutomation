@@ -149,6 +149,8 @@ class EmailDraftTest {
         });
         assertEquals(String.format("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT", email.getEmailID()),
                 exception.getMessage());
+
+        apis.deleteDraft("me", email.getEmailID());
     }
 
 }
