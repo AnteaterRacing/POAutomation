@@ -209,6 +209,13 @@ class GmailAPI {
         return response.getDrafts();
     }
 
+    /**
+     * Collects all the emails from the inbox of the user specified
+     * 
+     * @param userID the user whose inbox we will retrieve emails from
+     * @return       list of messages that represent emails in an ibox
+     * @throws IOException
+     */
     public List<Message> getInbox(String userID) throws IOException {
         ListMessagesResponse response = serviceHandler.users().messages().list(userID)
                 .setLabelIds(Arrays.asList(new String[] { "INBOX" })).execute();
