@@ -162,13 +162,13 @@ class EmailDraft {
     public String getDraftID() {
         return draftID;
     }
-    
+
     /**
      * Retrieves the emailId of the email sent pertaining to this object
      * 
      * @return emailID
      */
-    public String getEmailID() {    
+    public String getEmailID() {
         return emailID;
     }
 }

@@ -70,12 +70,11 @@ class SheetsAPITest {
     @Test
     public void testRenamingTabs() throws IOException, GeneralSecurityException {
         sheetDriver.renameTab(id, 0, "Test0");
-        
+
         // Check if old tab name exists
-        assertThrows(
-            IOException.class,
-            () -> { sheetDriver.getValues(id, range); }, 
-            "Did not throw IOException as expected");
+        assertThrows(IOException.class, () -> {
+            sheetDriver.getValues(id, range);
+        }, "Did not throw IOException as expected");
 
         range = "Test0!A1:C3";
         testGettingValues();
@@ -85,18 +84,15 @@ class SheetsAPITest {
     public void testWriteToSpreadsheet() throws IOException, GeneralSecurityException {
         List<List<Object>> values = new ArrayList<>();
 
-        values.add(Arrays.asList(
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
-        values.add(Arrays.asList(
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
-        values.add(Arrays.asList(
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
-            Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
+        values.add(Arrays.asList(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
+        values.add(Arrays.asList(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
+        values.add(Arrays.asList(Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                Integer.toString(ThreadLocalRandom.current().nextInt(0, 10)),
+                Integer.toString(ThreadLocalRandom.current().nextInt(0, 10))));
 
         sheetDriver.writeToSpreadsheet(id, range, valueOption, values);
         List<List<Object>> results = sheetDriver.getValues(id, range);
