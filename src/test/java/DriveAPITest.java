@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.api.services.drive.model.File;
-import com.google.api.services.sheets.v4.model.Sheet;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DriveAPITest {
@@ -63,10 +63,13 @@ class DriveAPITest {
     public void testMoveFile() throws IOException, GeneralSecurityException {
         String copyid = drive.copyFile(ID, "Copy of Stuff");
         String folderID = drive.createFolder("Test Folder");
+        List<String> previousParents = drive.getParents(copyid);
+
         drive.moveFile(copyid, folderID);
         List<String> parents = drive.getParents(copyid);
 
         assertTrue(parents.contains(folderID));
+        assertNotEquals(previousParents, parents);
         drive.deleteItem(folderID);
     }
 
