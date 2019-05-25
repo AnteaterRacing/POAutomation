@@ -2,25 +2,25 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-class SpreadSheet
-{
+class SpreadSheet {
     private SheetsAPI sheetService;
     private DriveAPI driveService;
     private String spreadsheetID;
-    private final String[] valueOption = {"RAW", "USER_ENTERED"};
+    private final String[] valueOption = { "RAW", "USER_ENTERED" };
 
     /**
-     * Creates a new Spreadsheet or link to a pre-existing spreadsheet within the drive
-     * for this particular instance of the SpreadSheet class, based on the linkExisitingSheet
-     * flag.
+     * Creates a new Spreadsheet or link to a pre-existing spreadsheet within the
+     * drive for this particular instance of the SpreadSheet class, based on the
+     * linkExisitingSheet flag.
      * 
-     * @param id the name of the spreadsheet or the id of the pre-existsing spreadsheet file
-     * @param linkExisitingSheet determines whether to link to a spreadsheet or make a new one
+     * @param id                 the name of the spreadsheet or the id of the
+     *                           pre-existsing spreadsheet file
+     * @param linkExisitingSheet determines whether to link to a spreadsheet or make
+     *                           a new one
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public SpreadSheet(String id, boolean linkExisitingSheet) throws IOException, GeneralSecurityException
-    {
+    public SpreadSheet(String id, boolean linkExisitingSheet) throws IOException, GeneralSecurityException {
         sheetService = SheetsAPI.getSheetsAPI();
         driveService = DriveAPI.getDriveAPI();
         spreadsheetID = linkExisitingSheet ? id : sheetService.createSpreadsheet(id);
@@ -33,8 +33,7 @@ class SpreadSheet
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public SpreadSheet(SpreadSheet copy, String title) throws IOException, GeneralSecurityException
-    {
+    public SpreadSheet(SpreadSheet copy, String title) throws IOException, GeneralSecurityException {
         sheetService = SheetsAPI.getSheetsAPI();
         driveService = DriveAPI.getDriveAPI();
         spreadsheetID = driveService.copyFile(copy.getID(), title);
@@ -47,8 +46,7 @@ class SpreadSheet
      * @throws IOException
      * @throws GeneralSecurityException
      */
-    public SpreadSheet(String title) throws IOException, GeneralSecurityException
-    {
+    public SpreadSheet(String title) throws IOException, GeneralSecurityException {
         sheetService = SheetsAPI.getSheetsAPI();
         driveService = DriveAPI.getDriveAPI();
         spreadsheetID = sheetService.createSpreadsheet(title);
@@ -57,28 +55,21 @@ class SpreadSheet
     /**
      * Enters data into a part of the spreadsheet.
      * 
-     * @param tab               The tab where the data will be entered
-     * @param startColumn       The first column where data will be entered
-     * @param startRow          The first row where data will be entered
-     * @param endColumn         The last column where data will entered
-     * @param endRow            The last row where data will be entered
-     * @param contents          The data going into the spreadsheet. The outer list represents the
-     *                          row while the inner list represents the column where the data will 
-     *                          be written to
-     * @param containsFormulas  States whether or not formulas are being entered
+     * @param tab              The tab where the data will be entered
+     * @param startColumn      The first column where data will be entered
+     * @param startRow         The first row where data will be entered
+     * @param endColumn        The last column where data will entered
+     * @param endRow           The last row where data will be entered
+     * @param contents         The data going into the spreadsheet. The outer list
+     *                         represents the row while the inner list represents
+     *                         the column where the data will be written to
+     * @param containsFormulas States whether or not formulas are being entered
      * @throws IOException
      */
-    public void write(String tab,
-                      String startColumn,
-                      int startRow,
-                      String endColumn,
-                      int endRow,
-                      List<List<Object>> contents,
-                      boolean containsFormulas) throws IOException
-    {
+    public void write(String tab, String startColumn, int startRow, String endColumn, int endRow,
+            List<List<Object>> contents, boolean containsFormulas) throws IOException {
         StringBuffer a1Notation = new StringBuffer(tab);
-        if (startColumn != "" && startRow > 0 && endColumn != "" && endRow > 0)
-        {
+        if (startColumn != "" && startRow > 0 && endColumn != "" && endRow > 0) {
             a1Notation.append("!");
             a1Notation.append(startColumn);
             a1Notation.append(startRow);
@@ -87,11 +78,8 @@ class SpreadSheet
             a1Notation.append(endRow);
         }
 
-        sheetService.writeToSpreadsheet(
-            spreadsheetID,
-            a1Notation.toString(),
-            !containsFormulas ? valueOption[0] : valueOption[1],
-            contents);
+        sheetService.writeToSpreadsheet(spreadsheetID, a1Notation.toString(),
+                !containsFormulas ? valueOption[0] : valueOption[1], contents);
     }
 
     /**
@@ -100,10 +88,7 @@ class SpreadSheet
      * @param tab
      * @throws IOException
      */
-    public void write(String tab,
-                      List<List<Object>> contents,
-                      boolean containsFormulas) throws IOException
-    {
+    public void write(String tab, List<List<Object>> contents, boolean containsFormulas) throws IOException {
         write(tab, "", -1, "", -1, contents, containsFormulas);
     }
 
@@ -113,8 +98,7 @@ class SpreadSheet
      * @param folderID the id of the folder we will be moving the folder to
      * @throws IOException
      */
-    public void moveSpreadsheet(String folderID) throws IOException
-    {
+    public void moveSpreadsheet(String folderID) throws IOException {
         driveService.moveFile(spreadsheetID, folderID);
     }
 
@@ -123,32 +107,26 @@ class SpreadSheet
      * 
      * @return spreadsheet id
      */
-    public String getID()
-    {
+    public String getID() {
         return spreadsheetID;
     }
 
     /**
-     * Returns the values of the spreadsheet in the columns and rows specified
-     * as parameters to the function
+     * Returns the values of the spreadsheet in the columns and rows specified as
+     * parameters to the function
      * 
-     * @param tab               The tab where the data will be entered
-     * @param startColumn       The first column where data will be entered
-     * @param startRow          The first row where data will be entered
-     * @param endColumn         The last column where data will entered
-     * @param endRow            The last row where data will be entered
-     * @return                  The contents from the range specified
+     * @param tab         The tab where the data will be entered
+     * @param startColumn The first column where data will be entered
+     * @param startRow    The first row where data will be entered
+     * @param endColumn   The last column where data will entered
+     * @param endRow      The last row where data will be entered
+     * @return The contents from the range specified
      * @throws IOException
      */
-    public List<List<Object>> getValues(String tab,
-                                        String startColumn,
-                                        int startRow,
-                                        String endColumn,
-                                        int endRow) throws IOException
-    {
+    public List<List<Object>> getValues(String tab, String startColumn, int startRow, String endColumn, int endRow)
+            throws IOException {
         StringBuffer a1Notation = new StringBuffer(tab);
-        if (startColumn != "" && startRow > 0 && endColumn != "" && endRow > 0)
-        {
+        if (startColumn != "" && startRow > 0 && endColumn != "" && endRow > 0) {
             a1Notation.append("!");
             a1Notation.append(startColumn);
             a1Notation.append(startRow);
@@ -167,8 +145,7 @@ class SpreadSheet
      * @return
      * @throws IOException
      */
-    public List<List<Object>> getValues(String tab) throws IOException
-    {
+    public List<List<Object>> getValues(String tab) throws IOException {
         return getValues(tab, "", -1, "", -1);
     }
 }

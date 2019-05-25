@@ -28,8 +28,8 @@ class DriveAPI {
     private static final String TOKENS_DIRECTORY_PATH = "tokens/drive";
 
     /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
+     * Global instance of the scopes required by this quickstart. If modifying these
+     * scopes, delete your previously saved tokens/ folder.
      */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/client_id.json";
@@ -39,6 +39,7 @@ class DriveAPI {
 
     /**
      * Creates an authorized Credential object.
+     * 
      * @param HTTP_TRANSPORT The network HTTP Transport.
      * @return An authorized Credential object.
      * @throws IOException If the credentials.json file cannot be found.
@@ -49,41 +50,40 @@ class DriveAPI {
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
-                .build();
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+                clientSecrets, SCOPES)
+                        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+                        .setAccessType("offline").build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8080).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
     /**
-     * Instantiates a new instance of the serviceHandler, which will allow access to a specific google
-     * drive based on the credentials given.
+     * Instantiates a new instance of the serviceHandler, which will allow access to
+     * a specific google drive based on the credentials given.
      * 
-     * @throws IOException If the credentials.json file cannot be found by the getCredentials function
-     * @throws GeneralSecurityException If the credentials in the json file are not valid
+     * @throws IOException              If the credentials.json file cannot be found
+     *                                  by the getCredentials function
+     * @throws GeneralSecurityException If the credentials in the json file are not
+     *                                  valid
      */
-    private DriveAPI() throws IOException, GeneralSecurityException
-    {
+    private DriveAPI() throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         serviceHandler = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                                  .setApplicationName(APPLICATION_NAME).build();
+                .setApplicationName(APPLICATION_NAME).build();
     }
 
     /**
      * Grabs an instance of the DriveAPI based on the driveAPIInstance variable
      * 
-     * @throws IOException If the credentials.json file cannot be found by the getCredentials function
-     * @throws GeneralSecurityException If the credentials in the json file are not valid
+     * @throws IOException              If the credentials.json file cannot be found
+     *                                  by the getCredentials function
+     * @throws GeneralSecurityException If the credentials in the json file are not
+     *                                  valid
      */
-    public static DriveAPI getDriveAPI() throws IOException, GeneralSecurityException
-    {
-        if (driveAPIInstance == null)
-        {
-            synchronized(DriveAPI.class)
-            {
+    public static DriveAPI getDriveAPI() throws IOException, GeneralSecurityException {
+        if (driveAPIInstance == null) {
+            synchronized (DriveAPI.class) {
                 if (driveAPIInstance == null)
                     driveAPIInstance = new DriveAPI();
             }
@@ -93,15 +93,14 @@ class DriveAPI {
     }
 
     /**
-     * Copies an existing file from the Drive to a new file. The function returns the ID 
-     * of the new file.
+     * Copies an existing file from the Drive to a new file. The function returns
+     * the ID of the new file.
      * 
-     * @param fileID the ID of the file that will be copied from
+     * @param fileID   the ID of the file that will be copied from
      * @param fileName the name of the new file.
      * @throws IOException If there are issues with the files involved or the drive
      */
-    public String copyFile(String fileID, String fileName) throws IOException
-    {
+    public String copyFile(String fileID, String fileName) throws IOException {
         File newCopiedFile = new File();
         newCopiedFile.set("Title", fileName);
 
@@ -116,14 +115,12 @@ class DriveAPI {
      * @return the ID of the newly created folder
      * @throws IOException If there are issues with the files involved or the drive
      */
-    public String createFolder(String folderName) throws IOException
-    {
+    public String createFolder(String folderName) throws IOException {
         File newFolder = new File();
         newFolder.set("Title", folderName);
 
         newFolder.setMimeType("application/vnd.google-apps.folder");
-        File createdFolder = serviceHandler.files().create(newFolder).setFields("id")
-                                         .execute();
+        File createdFolder = serviceHandler.files().create(newFolder).setFields("id").execute();
         return createdFolder.getId();
     }
 
@@ -134,29 +131,24 @@ class DriveAPI {
      * @return a list of folder ids of the file's parents
      * @throws IOException
      */
-    public List<String> getParents(String fileID) throws IOException
-    {
-        File file = serviceHandler.files().get(fileID).setFields("parents")
-                                  .execute();
+    public List<String> getParents(String fileID) throws IOException {
+        File file = serviceHandler.files().get(fileID).setFields("parents").execute();
         return file.getParents();
     }
 
     /**
      * Moves a files into a specified folder within the Google Drive
      * 
-     * @param fileID the id of the file that will be moved
+     * @param fileID   the id of the file that will be moved
      * @param folderID the id of the folder that the file will be moved into
      * @throws IOException
      */
-    public void moveFile(String fileID, String folderID) throws IOException
-    {
-        File currentFile = serviceHandler.files().get(fileID).setFields("parents")
-                                         .execute();
+    public void moveFile(String fileID, String folderID) throws IOException {
+        File currentFile = serviceHandler.files().get(fileID).setFields("parents").execute();
         String prevParents = String.join(",", currentFile.getParents());
 
-        serviceHandler.files().update(fileID, null)
-                      .setAddParents(folderID).setRemoveParents(prevParents)
-                      .setFields("id, parents").execute();
+        serviceHandler.files().update(fileID, null).setAddParents(folderID).setRemoveParents(prevParents)
+                .setFields("id, parents").execute();
     }
 
     /**
@@ -165,30 +157,26 @@ class DriveAPI {
      * @param id the id of the file/folder you want to delete.
      * @throws IOException
      */
-    public void deleteItem(String id) throws IOException
-    {
+    public void deleteItem(String id) throws IOException {
         serviceHandler.files().delete(id).execute();
     }
 
     /**
-     * Returns the files found within the google drive used to authenticate
-     * the API
+     * Returns the files found within the google drive used to authenticate the API
      * 
      * @return A list of files contained in the drive
      * @throws IOException
      */
-    public List<File> getFiles() throws IOException
-    {
+    public List<File> getFiles() throws IOException {
         ArrayList<File> files = new ArrayList<File>();
         Files.List filePages = serviceHandler.files().list();
-        do{
+        do {
             FileList filelist = filePages.execute();
             files.addAll(filelist.getFiles());
             filePages.setPageToken(filelist.getNextPageToken());
 
-        } while(filePages.getPageToken() != null &&
-                filePages.getPageToken().length() > 0);
-        
+        } while (filePages.getPageToken() != null && filePages.getPageToken().length() > 0);
+
         return files;
     }
 }
