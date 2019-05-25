@@ -234,6 +234,17 @@ class GmailAPI {
         return messages;
     }
 
+    /**
+     * Moves the given email from a given user's account to the trash
+     * 
+     * @param userID  the user whose inbox we will retrieve emails from
+     * @param emailID the ID of the email to move to the trash
+     * @throws IOException
+     */
+    public void trashEmail(String userID, String emailID) throws IOException {
+        serviceHandler.users().messages().trash(userID, emailID).execute();
+    }
+
     public static void main(String... args) throws IOException, GeneralSecurityException, MessagingException {
         // Build a new authorized API client service.
         /*
@@ -252,7 +263,8 @@ class GmailAPI {
          */
 
         GmailAPI gmail = GmailAPI.getInstance();
-        String messageID = gmail.createDraft("vguy77@gmail.com", "vguy77@gmail.com", "test", "test", "me");
-        gmail.sendDraft("me", messageID);
+        // String messageID = gmail.createDraft("vguy77@gmail.com", "vguy77@gmail.com",
+        // "test", "test", "me");
+        // gmail.sendDraft("me", messageID);
     }
 }
