@@ -213,7 +213,7 @@ class GmailAPI {
      * Collects all the emails from the inbox of the user specified
      * 
      * @param userID the user whose inbox we will retrieve emails from
-     * @return       list of messages that represent emails in an ibox
+     * @return list of messages that represent emails in an ibox
      * @throws IOException
      */
     public List<Message> getInbox(String userID) throws IOException {

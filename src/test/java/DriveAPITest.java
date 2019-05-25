@@ -23,12 +23,12 @@ class DriveAPITest {
         SheetsAPI sheets = SheetsAPI.getSheetsAPI();
         String range = "Test0!A1:C3";
         ID = sheets.createSpreadsheet("Test Sheet");
-        
+
         List<List<Object>> values = new ArrayList<List<Object>>();
         values.add(Arrays.asList("1", "0", "0"));
         values.add(Arrays.asList("0", "1", "0"));
         values.add(Arrays.asList("0", "0", "1"));
-        
+
         sheets.renameTab(ID, 0, "Test0");
         sheets.writeToSpreadsheet(ID, range, "RAW", values);
     }
@@ -71,8 +71,7 @@ class DriveAPITest {
     }
 
     @AfterAll
-    public static void cleanUp() throws IOException
-    {
+    public static void cleanUp() throws IOException {
         drive.deleteItem(ID);
     }
 }

@@ -157,26 +157,23 @@ class SheetsAPI {
      * Changes the name of a specified spreadsheet tab.
      * 
      * @param spreadsheetID the id of the spreadsheet containing the tab of interest
-     * @param tabNumber the number of the tab relative to position from leftmost tab
-     * @param newTitle the new name of the tab.
+     * @param tabNumber     the number of the tab relative to position from leftmost
+     *                      tab
+     * @param newTitle      the new name of the tab.
      * @throws IOException
      */
-    public void renameTab(String spreadsheetID, int tabNumber, String newTitle) throws IOException
-    {
+    public void renameTab(String spreadsheetID, int tabNumber, String newTitle) throws IOException {
         List<Request> requests = new ArrayList<Request>();
         Spreadsheet spreadsheet = sheetsServiceHandler.spreadsheets().get(spreadsheetID).execute();
         List<Sheet> sheets = (List<Sheet>) spreadsheet.get("sheets");
-        
-        if (tabNumber >= 0 && tabNumber < sheets.size())
-        {
+
+        if (tabNumber >= 0 && tabNumber < sheets.size()) {
             SheetProperties sheetProp = sheets.get(tabNumber).getProperties();
             sheetProp.setTitle(newTitle);
 
             requests.add(new Request().setUpdateSheetProperties(
-                new UpdateSheetPropertiesRequest()
-                    .setProperties(sheetProp)
-                    .setFields("Title")));
-        
+                    new UpdateSheetPropertiesRequest().setProperties(sheetProp).setFields("Title")));
+
             BatchUpdateSpreadsheetRequest allRequests = new BatchUpdateSpreadsheetRequest().setRequests(requests);
             sheetsServiceHandler.spreadsheets().batchUpdate(spreadsheetID, allRequests).execute();
         }
