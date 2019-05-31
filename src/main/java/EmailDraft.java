@@ -98,7 +98,7 @@ class EmailDraft {
             emailService.deleteDraft(userID, draftID);
             draftID = emailService.createDraft(addressTo, addressFrom, subject, messageBody, userID);
         } else
-            System.out.printf("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT", emailID);
+            System.out.printf("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT\n", emailID);
     }
 
     /**
@@ -116,7 +116,7 @@ class EmailDraft {
             emailService.deleteDraft(userID, draftID);
             draftID = emailService.createDraft(addressTo, addressFrom, subject, messageBody, userID);
         } else
-            System.out.printf("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT", emailID);
+            System.out.printf("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT\n", emailID);
     }
 
     /**

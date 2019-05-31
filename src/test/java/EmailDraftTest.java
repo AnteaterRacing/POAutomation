@@ -131,33 +131,31 @@ class EmailDraftTest {
 
         // check if we cannot update addressFrom
         email.updateAddressFrom(NEW_ADDRESS_FROM);
-        assertEquals(String.format("CANNOT EDIT ADDRESSFROM. EMAIL %s ALREADY SENT", email.getEmailID()),
+        assertEquals(String.format("CANNOT EDIT ADDRESSFROM. EMAIL %s ALREADY SENT\n", email.getEmailID()),
                      output.toString());
         output.reset();
 
         // check if we cannot update addressTo
         email.updateAddressTo(NEW_ADDRESS_TO);
-        assertEquals(String.format("CANNOT EDIT ADDRESSTO. EMAIL %s ALREADY SENT", email.getEmailID()),
+        assertEquals(String.format("CANNOT EDIT ADDRESSTO. EMAIL %s ALREADY SENT\n", email.getEmailID()),
                      output.toString());
         output.reset();
 
         // check if we cannot update Subject
         email.updateSubjectLine(NEW_SUBJECT);
-        assertEquals(String.format("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT", email.getEmailID()),
+        assertEquals(String.format("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT\n", email.getEmailID()),
                      output.toString());
         output.reset();
 
         // check if we cannot update Message
         email.updateMessage(NEW_MESSAGE_BODY);
-        assertEquals(String.format("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT", email.getEmailID()),
+        assertEquals(String.format("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT\n", email.getEmailID()),
                      output.toString());
         output.reset();
 
         // Reset output stream
         System.out.flush();
         System.setOut(oldStream);
-
-        apis.deleteDraft("me", email.getEmailID());
     }
 
 }
