@@ -5,12 +5,6 @@ import java.time.ZonedDateTime;
 
 import javax.mail.MessagingException;
 
-class AlreadySentException extends Exception {
-    public AlreadySentException(String errorMessage) {
-        super(errorMessage);
-    }
-}
-
 class EmailDraft {
     private GmailAPI emailService;
 
@@ -62,13 +56,13 @@ class EmailDraft {
      * @throws MessagingException
      * @throws AlreadySentException
      */
-    public void updateAddressFrom(String from) throws IOException, MessagingException, AlreadySentException {
+    public void updateAddressFrom(String from) throws IOException, MessagingException {
         if (!sent) {
             addressFrom = from;
             emailService.deleteDraft(userID, draftID);
             draftID = emailService.createDraft(addressTo, addressFrom, subject, messageBody, userID);
         } else
-            throw new AlreadySentException(String.format("CANNOT EDIT ADDRESSFROM. EMAIL %s ALREADY SENT", emailID));
+            System.out.printf("CANNOT EDIT ADDRESSFROM. EMAIL %s ALREADY SENT\n", emailID);
     }
 
     /**
@@ -80,13 +74,13 @@ class EmailDraft {
      * @throws MessagingException
      * @throws AlreadySentException
      */
-    public void updateAddressTo(String to) throws IOException, MessagingException, AlreadySentException {
+    public void updateAddressTo(String to) throws IOException, MessagingException {
         if (!sent) {
             addressTo = to;
             emailService.deleteDraft(userID, draftID);
             draftID = emailService.createDraft(addressTo, addressFrom, subject, messageBody, userID);
         } else
-            throw new AlreadySentException(String.format("CANNOT EDIT ADDRESSTO. EMAIL %s ALREADY SENT", emailID));
+            System.out.printf("CANNOT EDIT ADDRESSTO. EMAIL %s ALREADY SENT\n", emailID);
     }
 
     /**
@@ -98,13 +92,13 @@ class EmailDraft {
      * @throws MessagingException
      * @throws AlreadySentException
      */
-    public void updateSubjectLine(String sub) throws IOException, MessagingException, AlreadySentException {
+    public void updateSubjectLine(String sub) throws IOException, MessagingException {
         if (!sent) {
             subject = sub;
             emailService.deleteDraft(userID, draftID);
             draftID = emailService.createDraft(addressTo, addressFrom, subject, messageBody, userID);
         } else
-            throw new AlreadySentException(String.format("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT", emailID));
+            System.out.printf("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT\n", emailID);
     }
 
     /**
@@ -116,13 +110,13 @@ class EmailDraft {
      * @throws MessagingException
      * @throws AlreadySentException
      */
-    public void updateMessage(String body) throws IOException, MessagingException, AlreadySentException {
+    public void updateMessage(String body) throws IOException, MessagingException {
         if (!sent) {
             messageBody = body;
             emailService.deleteDraft(userID, draftID);
             draftID = emailService.createDraft(addressTo, addressFrom, subject, messageBody, userID);
         } else
-            throw new AlreadySentException(String.format("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT", emailID));
+            System.out.printf("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT\n", emailID);
     }
 
     /**
