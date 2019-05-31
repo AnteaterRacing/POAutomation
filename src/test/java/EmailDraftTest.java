@@ -1,9 +1,10 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.Test;
 class EmailDraftTest {
     public static GmailAPI apis;
     public static EmailDraft email;
-    public static AlreadySentException exception = new AlreadySentException("exception");
     public static final String NEW_ADDRESS_FROM = "vguy77@gmail.com";
     public static final String NEW_ADDRESS_TO = "vqha@uci.edu";
     public static final String NEW_SUBJECT = "TEST2";
@@ -30,7 +30,7 @@ class EmailDraftTest {
     }
 
     @Test
-    public void testUpdateAddressFrom() throws IOException, MessagingException, AlreadySentException {
+    public void testUpdateAddressFrom() throws IOException, MessagingException {
         email.updateAddressFrom(NEW_ADDRESS_FROM);
 
         List<Draft> drafts = apis.getDrafts("me");
@@ -50,7 +50,7 @@ class EmailDraftTest {
     }
 
     @Test
-    public void testUpdateAddressTo() throws IOException, MessagingException, AlreadySentException {
+    public void testUpdateAddressTo() throws IOException, MessagingException {
         email.updateAddressTo(NEW_ADDRESS_TO);
 
         List<Draft> drafts = apis.getDrafts("me");
@@ -70,7 +70,7 @@ class EmailDraftTest {
     }
 
     @Test
-    public void testUpdateAddressSubjectLine() throws IOException, MessagingException, AlreadySentException {
+    public void testUpdateAddressSubjectLine() throws IOException, MessagingException {
         email.updateSubjectLine(NEW_SUBJECT);
 
         List<Draft> drafts = apis.getDrafts("me");
@@ -90,7 +90,7 @@ class EmailDraftTest {
     }
 
     @Test
-    public void testUpdateMessage() throws IOException, MessagingException, AlreadySentException {
+    public void testUpdateMessage() throws IOException, MessagingException {
         email.updateMessage(NEW_MESSAGE_BODY);
 
         List<Draft> drafts = apis.getDrafts("me");
@@ -116,39 +116,46 @@ class EmailDraftTest {
     }
 
     @Test
-    void checkSendingEmail() throws IOException {
+    void checkSendingEmail() throws IOException, MessagingException {
+        // Change output stream to another to record output as string
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PrintStream outputStream = new PrintStream(output);
+        PrintStream oldStream = System.out;
+        System.setOut(outputStream);
+
+        // Send email
         email.sendDraft();
 
         // check if draft is sent
         assertTrue(email.hasBeenSent());
 
         // check if we cannot update addressFrom
-        Exception exception = assertThrows(AlreadySentException.class, () -> {
-            email.updateAddressFrom(NEW_ADDRESS_FROM);
-        });
+        email.updateAddressFrom(NEW_ADDRESS_FROM);
         assertEquals(String.format("CANNOT EDIT ADDRESSFROM. EMAIL %s ALREADY SENT", email.getEmailID()),
-                exception.getMessage());
+                     output.toString());
+        output.reset();
 
         // check if we cannot update addressTo
-        exception = assertThrows(AlreadySentException.class, () -> {
-            email.updateAddressTo(NEW_ADDRESS_TO);
-        });
+        email.updateAddressTo(NEW_ADDRESS_TO);
         assertEquals(String.format("CANNOT EDIT ADDRESSTO. EMAIL %s ALREADY SENT", email.getEmailID()),
-                exception.getMessage());
+                     output.toString());
+        output.reset();
 
         // check if we cannot update Subject
-        exception = assertThrows(AlreadySentException.class, () -> {
-            email.updateSubjectLine(NEW_SUBJECT);
-        });
+        email.updateSubjectLine(NEW_SUBJECT);
         assertEquals(String.format("CANNOT EDIT SUBJECT. EMAIL %s ALREADY SENT", email.getEmailID()),
-                exception.getMessage());
+                     output.toString());
+        output.reset();
 
         // check if we cannot update Message
-        exception = assertThrows(AlreadySentException.class, () -> {
-            email.updateMessage(NEW_MESSAGE_BODY);
-        });
+        email.updateMessage(NEW_MESSAGE_BODY);
         assertEquals(String.format("CANNOT EDIT MESSAGEBODY. EMAIL %s ALREADY SENT", email.getEmailID()),
-                exception.getMessage());
+                     output.toString());
+        output.reset();
+
+        // Reset output stream
+        System.out.flush();
+        System.setOut(oldStream);
 
         apis.deleteDraft("me", email.getEmailID());
     }
